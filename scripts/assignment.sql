@@ -24,12 +24,16 @@ LIMIT 1;
 -- 2. 
 --     a. Which specialty had the most total number of claims (totaled over all drugs)?
 
-SELECT specialty_description, total_claim_count
+SELECT specialty_description, SUM(total_claim_count) total_claims
 FROM prescriber
 JOIN prescription
 USING(npi) 
-ORDER BY total_claim_count DESC
+GROUP BY specialty_description
+ORDER BY total_claims DESC
 LIMIT 1;
+
+-- Family Practice had the most claims
+
 
 --     b. Which specialty had the most total number of claims for opioids?
 
@@ -45,24 +49,6 @@ ORDER BY opioid_count DESC;
 
 -- nurse practitioner had the highest count of opioid related claims at 900,845
 
-SELECT DISTINCT specialty_description
-FROM prescriber;
-107 specialties
-
-SELECT SUM(total_claim_count)
-FROM prescription as p
-JOIN drug as d
-USING(drug_name)
-WHERE opioid_drug_flag = 'Y';
-2576654
-
-SELECT COUNT(*)
-FROM drug
-WHERE opioid_drug_flag = 'Y';
-
-SELECT * 
-FROM prescription
-LIMIT 10;
 
 --     c. **Challenge Question:** Are there any specialties that appear in the prescriber table that have no associated prescriptions in the prescription table?
 
@@ -125,6 +111,17 @@ ORDER BY money DESC;
 
 -- 5. 
 --     a. How many CBSAs are in Tennessee? **Warning:** The cbsa table contains information for all states, not just Tennessee.
+
+SELECT * 
+FROM cbsa
+LIMIT 5;
+
+SELECT COUNT(*)
+FROM cbsa
+WHERE cbsaname LIKE '%TN%';
+
+-- there are 56 cbsa's in TN
+
 
 --     b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
 
