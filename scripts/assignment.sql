@@ -82,6 +82,17 @@ LIMIT 1;
 
 --     b. Which drug (generic_name) has the hightest total cost per day? **Bonus: Round your cost per day column to 2 decimal places. Google ROUND to see how this works.**
 
+
+SELECT drug_name,
+	(SELECT ROUND(SUM(total_drug_cost)/SUM(total_30_day_fill_count),2)) as daily_cost
+FROM prescription
+GROUP BY drug_name
+ORDER BY daily_cost DESC
+LIMIT 1;
+
+
+-- chenodal is the priciest per day at $86,741
+
 -- 4. 
 --     a. For each drug in the drug table, return the drug name and then a column named 'drug_type' which says 'opioid' for drugs which have opioid_drug_flag = 'Y', says 'antibiotic' for those drugs which have antibiotic_drug_flag = 'Y', and says 'neither' for all other drugs.
 
