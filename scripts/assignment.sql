@@ -1,8 +1,6 @@
 -- 1. 
 --     a. Which prescriber had the highest total number of claims (totaled over all drugs)? Report the npi and the total number of claims.
 
-SELECT * 
-FROM prescriber;
 
 SELECT npi, total_claim_count
 FROM prescriber as p1
@@ -10,6 +8,8 @@ JOIN prescription as p2
 USING(npi)
 ORDER BY total_claim_count DESC
 LIMIT 1;
+
+-- prescriber 1912011792 had the highest number of claims with 4538 claims
 
     
 --     b. Repeat the above, but this time report the nppes_provider_first_name, nppes_provider_last_org_name,  specialty_description, and the total number of claims.
@@ -20,6 +20,8 @@ JOIN prescription as p2
 USING(npi)
 ORDER BY total_claim_count DESC
 LIMIT 1;
+
+-- "DAVID"	"COFFEY"	"Family Practice"	4538
 
 -- 2. 
 --     a. Which specialty had the most total number of claims (totaled over all drugs)?
@@ -51,6 +53,15 @@ ORDER BY opioid_count DESC;
 
 
 --     c. **Challenge Question:** Are there any specialties that appear in the prescriber table that have no associated prescriptions in the prescription table?
+
+
+SELECT DISTINCT specialty_description, drug_name
+FROM prescriber
+FULL JOIN prescription
+USING(npi)
+WHERE drug_name IS NULL
+GROUP BY specialty_description, drug_name;
+
 
 --     d. **Difficult Bonus:** *Do not attempt until you have solved all other problems!* For each specialty, report the percentage of total claims by that specialty which are for opioids. Which specialties have a high percentage of opioids?
 
@@ -148,6 +159,22 @@ WHERE fipscounty IN
 	WHERE fipscounty IS NULL);
 --county with highest pop is 47157
 
+SELECT fipscounty, population
+FROM population
+JOIN zip_fips
+USING(fipscounty)
+JOIN cbsa
+USING(fipscounty)
+WHERE cbsaname IS NULL
+
+SELECT fipscounty, cbsaname
+FROM zip_fips
+JOIN cbsa
+USING(fipscounty)
+
+
+--try joining 3 and use where to filter
+
 
 
 -- 6. 
@@ -189,7 +216,35 @@ WHERE total_claim_count >=3000;
 
 SELECT 
 	p1.npi,
-	p2.drug_name
+	drug_name
+FROM prescriber as p1
+CROSS JOIN drug as d
+WHERE specialty_description = 'Pain Management'
+	AND nppes_provider_city = 'NASHVILLE'
+	AND opioid_drug_flag = 'Y';
+
+
+--     b. Next, report the number of claims per drug per prescriber. Be sure to include all combinations, whether or not the prescriber had any claims. You should report the npi, the drug name, and the number of claims (total_claim_count).
+
+SELECT 
+	npi,
+	p2.drug_name,
+	total_claim_count
+FROM prescriber as p1
+FULL JOIN prescription as p2
+USING(npi)
+CROSS JOIN drug
+WHERE specialty_description = 'Pain Management'
+	AND nppes_provider_city = 'NASHVILLE'
+	AND opioid_drug_flag = 'Y';
+
+    
+--     c. Finally, if you have not done so already, fill in any missing values for total_claim_count with 0. Hint - Google the COALESCE function.
+
+SELECT 
+	p1.npi,
+	p2.drug_name,
+	SUM(total_claim_count) AS total_claims
 FROM prescriber as p1
 JOIN prescription as p2
 USING(npi)
@@ -197,14 +252,7 @@ JOIN drug as d
 USING(drug_name)
 WHERE specialty_description = 'Pain Management'
 	AND nppes_provider_city = 'NASHVILLE'
-	AND opioid_drug_flag = 'Y';
+	AND opioid_drug_flag = 'Y'
+GROUP BY p1.npi, p2.drug_name;
 
-SELECT * 
-FROM prescriber
-WHERE specialty_description = 'Pain Management';
-
-
-
---     b. Next, report the number of claims per drug per prescriber. Be sure to include all combinations, whether or not the prescriber had any claims. You should report the npi, the drug name, and the number of claims (total_claim_count).
-    
---     c. Finally, if you have not done so already, fill in any missing values for total_claim_count with 0. Hint - Google the COALESCE function.
+-- try cross join
