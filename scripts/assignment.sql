@@ -136,15 +136,48 @@ GROUP BY cbsaname
 ORDER BY total_pop DESC;
 --memphis, TN has the largest combined pop at 67,870,189 and morristown, TN has the smallest pop at 1,163,520
 
-
 --     c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.
+
+SELECT 
+	fipscounty as county,
+	population
+FROM population
+WHERE fipscounty IN
+	(SELECT cbsa
+	FROM cbsa
+	WHERE fipscounty IS NULL);
+--county with highest pop is 47157
+
+
 
 -- 6. 
 --     a. Find all rows in the prescription table where total_claims is at least 3000. Report the drug_name and the total_claim_count.
 
+SELECT drug_name, total_claim_count
+FROM prescription
+WHERE total_claim_count >=3000;
+
 --     b. For each instance that you found in part a, add a column that indicates whether the drug is an opioid.
 
+SELECT 
+	p.drug_name, 
+	p.total_claim_count,
+	d.opioid_drug_flag AS is_opioid
+FROM prescription as p
+JOIN drug as d
+USING(drug_name)
+WHERE total_claim_count >=3000;
+
 --     c. Add another column to you answer from the previous part which gives the prescriber first and last name associated with each row.
+
+SELECT 
+	p.drug_name, 
+	p.total_claim_count,
+	d.opioid_drug_flag AS is_opioid
+FROM prescription as p
+JOIN drug as d
+USING(drug_name)
+WHERE total_claim_count >=3000;
 
 -- 7. The goal of this exercise is to generate a full list of all pain management specialists in Nashville and the number of claims they had for each opioid. **Hint:** The results from all 3 parts will have 637 rows.
 
