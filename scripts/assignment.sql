@@ -125,18 +125,17 @@ WHERE cbsaname LIKE '%TN%';
 
 --     b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
 
-SELECT DISTINCT cbsa, SUM(population) as total_pop
+SELECT DISTINCT cbsaname, SUM(population) as total_pop
 FROM cbsa
-RIGHT JOIN zip_fips
+LEFT JOIN zip_fips
 USING(fipscounty)
-RIGHT JOIN population as p
+LEFT JOIN population as p
 USING(fipscounty)
-GROUP BY cbsa;
---this is only getting me 10 rows which seems....wrong
+WHERE population IS NOT NULL
+GROUP BY cbsaname
+ORDER BY total_pop DESC;
+--memphis, TN has the largest combined pop at 67,870,189 and morristown, TN has the smallest pop at 1,163,520
 
-SELECT DISTINCT cbsa
-FROM cbsa
-409 different cbsa
 
 --     c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.
 
