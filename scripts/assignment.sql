@@ -51,22 +51,8 @@ JOIN drug
 USING(drug_name)
 WHERE drug.opioid_drug_flag = 'Y'
 GROUP BY specialty_description
-ORDER BY opioid_count DESC;
-
-
-SELECT DISTINCT specialty_description, 
-	(SELECT total_claim_count
-	FROM prescriber
-	WHERE prescriber.npi = prescription.npi) AS claim_count
-FROM prescriber
-JOIN prescription
-USING(npi)
-JOIN drug
-USING(drug_name)
-WHERE drug.opioid_drug_flag = 'Y'
-GROUP BY specialty_description
-ORDER BY opioid_count DESC;
-
+ORDER BY opioid_count DESC
+LIMIT 1;
 
 -- nurse practitioner had the highest count of opioid related claims at 900,845
 
