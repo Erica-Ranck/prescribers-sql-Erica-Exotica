@@ -51,6 +51,21 @@ WHERE drug.opioid_drug_flag = 'Y'
 GROUP BY specialty_description
 ORDER BY opioid_count DESC;
 
+
+SELECT DISTINCT specialty_description, 
+	(SELECT total_claim_count
+	FROM prescriber
+	WHERE prescriber.npi = prescription.npi) AS claim_count
+FROM prescriber
+JOIN prescription
+USING(npi)
+JOIN drug
+USING(drug_name)
+WHERE drug.opioid_drug_flag = 'Y'
+GROUP BY specialty_description
+ORDER BY opioid_count DESC;
+
+
 -- nurse practitioner had the highest count of opioid related claims at 900,845
 
 
@@ -174,29 +189,19 @@ ORDER BY total_pop DESC;
 
 --     c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.
 
-SELECT 
-	fipscounty as county,
-	population
-FROM population
-WHERE fipscounty IN
-	(SELECT cbsa
-	FROM cbsa
-	WHERE fipscounty IS NULL);
---county with highest pop is 47157
-
 SELECT fipscounty, population
 FROM population
-JOIN zip_fips
-USING(fipscounty)
-JOIN cbsa
-USING(fipscounty)
-WHERE cbsaname IS NULL
+WHERE fipscounty NOT IN
+	(SELECT c.fipscounty
+	FROM population
+	INNER JOIN cbsa as c
+	USING(fipscounty))
+ORDER BY population DESC
+LIMIT 1;
 
-SELECT fipscounty, cbsaname
-FROM zip_fips
-JOIN cbsa
-USING(fipscounty)
-
+SELECT cbsaname
+FROM cbsa
+WHERE fipscounty = '47155'
 
 --try joining 3 and use where to filter
 
