@@ -62,8 +62,17 @@ USING(npi)
 WHERE drug_name IS NULL
 GROUP BY specialty_description, drug_name;
 
+Select *
+FROM prescriber
+FULL JOIN prescription
+USING(npi)
+
+--there's 92 specialties without prescriptions in the prescriber table - should be lower than 92
+
 
 --     d. **Difficult Bonus:** *Do not attempt until you have solved all other problems!* For each specialty, report the percentage of total claims by that specialty which are for opioids. Which specialties have a high percentage of opioids?
+
+
 
 -- 3. 
 --     a. Which drug (generic_name) had the highest total drug cost?
@@ -225,34 +234,36 @@ WHERE specialty_description = 'Pain Management'
 
 
 --     b. Next, report the number of claims per drug per prescriber. Be sure to include all combinations, whether or not the prescriber had any claims. You should report the npi, the drug name, and the number of claims (total_claim_count).
-
+	
 SELECT 
-	npi,
-	p2.drug_name,
-	total_claim_count
+	p1.npi,
+	d.drug_name,
+	SUM(total_claim_count) as claims
 FROM prescriber as p1
+CROSS JOIN drug as d
 FULL JOIN prescription as p2
 USING(npi)
-CROSS JOIN drug
 WHERE specialty_description = 'Pain Management'
 	AND nppes_provider_city = 'NASHVILLE'
-	AND opioid_drug_flag = 'Y';
+	AND opioid_drug_flag = 'Y'
+GROUP BY p1.npi, d.drug_name;
 
-    
+
+   
 --     c. Finally, if you have not done so already, fill in any missing values for total_claim_count with 0. Hint - Google the COALESCE function.
 
 SELECT 
 	p1.npi,
-	p2.drug_name,
-	SUM(total_claim_count) AS total_claims
+	d.drug_name,
+	SUM(total_claim_count) as opioid_claims
 FROM prescriber as p1
-JOIN prescription as p2
+CROSS JOIN drug as d
+FULL JOIN prescription as p2
 USING(npi)
-JOIN drug as d
-USING(drug_name)
 WHERE specialty_description = 'Pain Management'
 	AND nppes_provider_city = 'NASHVILLE'
 	AND opioid_drug_flag = 'Y'
-GROUP BY p1.npi, p2.drug_name;
+GROUP BY p1.npi, d.drug_name;
 
--- try cross join
+
+-- try cross join, ONLY CROSS JOINING PRESCRIBER AND DRUG, DIFF JOIN FOR PRESCRIPTION
