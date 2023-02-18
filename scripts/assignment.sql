@@ -2,27 +2,29 @@
 --     a. Which prescriber had the highest total number of claims (totaled over all drugs)? Report the npi and the total number of claims.
 
 
-SELECT npi, total_claim_count
+SELECT npi, SUM(total_claim_count) as total_claim_count
 FROM prescriber as p1
 JOIN prescription as p2
 USING(npi)
+GROUP BY npi
 ORDER BY total_claim_count DESC
 LIMIT 1;
 
 
--- prescriber 1912011792 had the highest number of claims with 4538 claims
+-- prescriber 1881634483 had highest claim clount w/ 99707
 
     
 --     b. Repeat the above, but this time report the nppes_provider_first_name, nppes_provider_last_org_name,  specialty_description, and the total number of claims.
 
-SELECT nppes_provider_first_name, nppes_provider_last_org_name, specialty_description, total_claim_count
+SELECT nppes_provider_first_name as fname, nppes_provider_last_org_name as lname, specialty_description as sd, SUM(total_claim_count) as total_claim_count
 FROM prescriber as p1
 JOIN prescription as p2
 USING(npi)
+GROUP BY fname, lname, sd
 ORDER BY total_claim_count DESC
 LIMIT 1;
 
--- "DAVID"	"COFFEY"	"Family Practice"	4538
+-- "BRUCE"	"PENDLEY"	"Family Practice"	99707
 
 -- 2. 
 --     a. Which specialty had the most total number of claims (totaled over all drugs)?
