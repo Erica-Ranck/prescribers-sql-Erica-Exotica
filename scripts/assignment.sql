@@ -67,7 +67,7 @@ FROM prescriber
 FULL JOIN prescription
 USING(npi)
 
---there's 92 specialties without prescriptions in the prescriber table - should be lower than 92
+--should be lower than 92
 
 
 --     d. **Difficult Bonus:** *Do not attempt until you have solved all other problems!* For each specialty, report the percentage of total claims by that specialty which are for opioids. Which specialties have a high percentage of opioids?
@@ -238,15 +238,15 @@ WHERE specialty_description = 'Pain Management'
 SELECT 
 	p1.npi,
 	d.drug_name,
-	SUM(total_claim_count) as claims
+	total_claim_count as opioid_claims
 FROM prescriber as p1
 CROSS JOIN drug as d
 FULL JOIN prescription as p2
-USING(npi)
+USING(drug_name, npi)
 WHERE specialty_description = 'Pain Management'
 	AND nppes_provider_city = 'NASHVILLE'
 	AND opioid_drug_flag = 'Y'
-GROUP BY p1.npi, d.drug_name;
+ORDER BY d.drug_name;
 
 
    
@@ -255,15 +255,12 @@ GROUP BY p1.npi, d.drug_name;
 SELECT 
 	p1.npi,
 	d.drug_name,
-	SUM(total_claim_count) as opioid_claims
+	COALESCE(total_claim_count, 0) as opioid_claims
 FROM prescriber as p1
 CROSS JOIN drug as d
 FULL JOIN prescription as p2
-USING(npi)
+USING(drug_name, npi)
 WHERE specialty_description = 'Pain Management'
 	AND nppes_provider_city = 'NASHVILLE'
 	AND opioid_drug_flag = 'Y'
-GROUP BY p1.npi, d.drug_name;
-
-
--- try cross join, ONLY CROSS JOINING PRESCRIBER AND DRUG, DIFF JOIN FOR PRESCRIPTION
+ORDER BY d.drug_name;
