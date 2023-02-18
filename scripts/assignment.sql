@@ -189,8 +189,10 @@ ORDER BY total_pop DESC;
 
 --     c. What is the largest (in terms of population) county which is not included in a CBSA? Report the county name and population.
 
-SELECT fipscounty, population
+SELECT fipscounty, county, population
 FROM population
+JOIN fips_county
+USING(fipscounty)
 WHERE fipscounty NOT IN
 	(SELECT c.fipscounty
 	FROM population
