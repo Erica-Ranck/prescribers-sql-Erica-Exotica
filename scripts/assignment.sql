@@ -71,16 +71,6 @@ WHERE specialty_description NOT IN
 	INNER JOIN prescription
 	USING(npi));
 	
-SELECT DISTINCT 
-	specialty_description
-FROM prescriber
-FULL JOIN prescription
-USING(npi)
-WHERE specialty_description NOT IN
-	(SELECT DISTINCT specialty_description
-	FROM prescriber
-	INNER JOIN prescription
-	USING(npi));
 
 SELECT DISTINCT specialty_description
 FROM prescriber;
@@ -91,18 +81,31 @@ FROM prescriber;
 
 --     d. **Difficult Bonus:** *Do not attempt until you have solved all other problems!* For each specialty, report the percentage of total claims by that specialty which are for opioids. Which specialties have a high percentage of opioids?
 
-
+SELECT DISTINCT 
+	specialty_description,
+	(SELECT AVG(total_claim_count)
+	FROM prescription) AS avg_claim
+FROM prescriber
+FULL JOIN prescription
+USING(npi)
+WHERE specialty_description NOT IN
+	(SELECT DISTINCT specialty_description
+	FROM prescriber
+	INNER JOIN prescription
+	USING(npi));
 
 -- 3. 
 --     a. Which drug (generic_name) had the highest total drug cost?
 
-SELECT drug_name, MAX(total_drug_cost) as highest_price
-FROM prescription
-GROUP BY drug_name
+SELECT generic_name, MONEY(SUM(total_drug_cost)) as highest_price
+FROM prescription as p
+JOIN drug as d
+USING(drug_name)
+GROUP BY generic_name
 ORDER BY highest_price DESC
 LIMIT 1;
 
--- ESBRIET has the highest total_drug_cost at $2,829,174
+-- "INSULIN GLARGINE,HUM.REC.ANLOG"	"$104,264,066.35"
 
 
 --     b. Which drug (generic_name) has the hightest total cost per day? **Bonus: Round your cost per day column to 2 decimal places. Google ROUND to see how this works.**
