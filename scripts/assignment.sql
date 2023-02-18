@@ -112,13 +112,12 @@ LIMIT 1;
 
 
 SELECT drug_name,
-	(SELECT ROUND(SUM(total_drug_cost)/SUM(total_30_day_fill_count),2)) as daily_cost
+	(SELECT SUM(total_drug_cost)/SUM(total_day_supply) as daily_cost
 FROM prescription
 GROUP BY drug_name
-ORDER BY daily_cost DESC
-LIMIT 1;
+ORDER BY daily_cost DESC;
 
--- chenodal is the priciest per day at $86,741
+-- this one isn't working waiting on answer slides
 
 -- 4. 
 --     a. For each drug in the drug table, return the drug name and then a column named 'drug_type' which says 'opioid' for drugs which have opioid_drug_flag = 'Y', says 'antibiotic' for those drugs which have antibiotic_drug_flag = 'Y', and says 'neither' for all other drugs.
@@ -158,11 +157,11 @@ SELECT *
 FROM cbsa
 LIMIT 5;
 
-SELECT COUNT(*)
+SELECT DISTINCT cbsaname
 FROM cbsa
 WHERE cbsaname LIKE '%TN%';
 
--- there are 56 cbsa's in TN
+-- there are 10 cbs's in TN
 
 
 --     b. Which cbsa has the largest combined population? Which has the smallest? Report the CBSA name and total population.
