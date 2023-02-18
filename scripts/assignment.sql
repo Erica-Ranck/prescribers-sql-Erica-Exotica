@@ -9,6 +9,7 @@ USING(npi)
 ORDER BY total_claim_count DESC
 LIMIT 1;
 
+
 -- prescriber 1912011792 had the highest number of claims with 4538 claims
 
     
@@ -26,7 +27,7 @@ LIMIT 1;
 -- 2. 
 --     a. Which specialty had the most total number of claims (totaled over all drugs)?
 
-SELECT specialty_description, SUM(total_claim_count) total_claims
+SELECT DISTINCT specialty_description, SUM(total_claim_count) as total_claims
 FROM prescriber
 JOIN prescription
 USING(npi) 
@@ -34,7 +35,8 @@ GROUP BY specialty_description
 ORDER BY total_claims DESC
 LIMIT 1;
 
--- Family Practice had the most claims
+
+-- Family Practice had the most claims 9752347
 
 
 --     b. Which specialty had the most total number of claims for opioids?
@@ -79,7 +81,7 @@ WHERE specialty_description NOT IN
 
 SELECT DISTINCT specialty_description
 FROM prescriber;
---107 distinct values in prescriber, and 92 distinct values in prescriptions, we're looking for what's not found in rx table
+--107 distinct values in prescriber, and 92 distinct values in prescriptions, we're looking for what's not found in rx table, this is anti-join
 
 -- there are 15 specialties without associated prescriptions
 
